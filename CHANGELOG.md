@@ -1,3 +1,7 @@
+## 6.0.0
+* Migrate android billingClient to 7.1.1
+  - https://developer.android.com/google/play/billing/migrate-gpblv7
+
 ## 5.6.1
 * Erroneous duplicate item by @deakjahn in https://github.com/dooboolab-community/flutter_inapp_purchase/pull/441
 * Fixed consumable products reading on Android by @33-Elephants in https://github.com/dooboolab-community/flutter_inapp_purchase/pull/439

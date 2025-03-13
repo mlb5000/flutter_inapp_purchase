@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.util.Log
 import com.android.billingclient.api.*
 import com.android.billingclient.api.BillingFlowParams.*
+import com.android.billingclient.api.BillingFlowParams.SubscriptionUpdateParams.ReplacementMode
 import io.flutter.plugin.common.FlutterException
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -507,7 +508,7 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
             val obfuscatedAccountId = call.argument<String>("obfuscatedAccountId")
             val obfuscatedProfileId = call.argument<String>("obfuscatedProfileId")
             val productId = call.argument<String>("productId")
-            val prorationMode = call.argument<Int>("prorationMode")!!
+            val replacementMode = call.argument<Int>("replacementMode")!!
             val purchaseToken = call.argument<String>("purchaseToken")
             val offerTokenIndex = call.argument<Int>("offerTokenIndex")
             val builder = newBuilder()
@@ -554,25 +555,25 @@ class AndroidInappPurchasePlugin internal constructor() : MethodCallHandler,
                 builder.setObfuscatedProfileId(obfuscatedProfileId)
             }
 
-            when (prorationMode) {
+            when (replacementMode) {
                 -1 -> {} //ignore
-                ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE -> {
-                    params.setReplaceProrationMode(ProrationMode.IMMEDIATE_AND_CHARGE_PRORATED_PRICE)
+                ReplacementMode.CHARGE_PRORATED_PRICE -> {
+                    params.setSubscriptionReplacementMode(ReplacementMode.CHARGE_PRORATED_PRICE)
                     if (type != BillingClient.ProductType.SUBS) {
                         safeChannel.error(
                             TAG,
                             "buyItemByType",
-                            "IMMEDIATE_AND_CHARGE_PRORATED_PRICE for proration mode only works in subscription purchase."
+                            "CHARGE_PRORATED_PRICE for proration mode only works in subscription purchase."
                         )
                         return
                     }
                 }
-                ProrationMode.IMMEDIATE_WITHOUT_PRORATION,
-                ProrationMode.DEFERRED,
-                ProrationMode.IMMEDIATE_WITH_TIME_PRORATION,
-                ProrationMode.IMMEDIATE_AND_CHARGE_FULL_PRICE ->
-                    params.setReplaceProrationMode(prorationMode)
-                else -> params.setReplaceProrationMode(ProrationMode.UNKNOWN_SUBSCRIPTION_UPGRADE_DOWNGRADE_POLICY)
+                ReplacementMode.CHARGE_FULL_PRICE,
+                ReplacementMode.DEFERRED,
+                ReplacementMode.WITH_TIME_PRORATION,
+                ReplacementMode.WITHOUT_PRORATION ->
+                    params.setSubscriptionReplacementMode(replacementMode)
+                else -> params.setSubscriptionReplacementMode(ReplacementMode.UNKNOWN_REPLACEMENT_MODE)
             }
 
             if (purchaseToken != null) {

@@ -265,7 +265,7 @@ class FlutterInappPurchase {
   /// Request a purchase on `Android` or `iOS`.
   /// Result will be received in `purchaseUpdated` listener or `purchaseError` listener.
   ///
-  /// Check [AndroidProrationMode] for valid proration values
+  /// Check [AndroidReplacementMode] for valid proration values
   /// Identical to [requestSubscription] on `iOS`.
   /// [purchaseTokenAndroid] is used when upgrading subscriptions and sets the old purchase token
   /// [offerTokenIndex] is now required for billing 5.0, if upgraded from billing 4.0 this will default to 0
@@ -278,7 +278,7 @@ class FlutterInappPurchase {
       return await _channel.invokeMethod('buyItemByType', <String, dynamic>{
         'type': _TypeInApp.inapp.name,
         'productId': productId,
-        'prorationMode': -1,
+        'replacementMode': -1,
         'obfuscatedAccountId': obfuscatedAccountId,
         'obfuscatedProfileId': obfuscatedProfileIdAndroid,
         'purchaseToken': purchaseTokenAndroid,
@@ -299,13 +299,13 @@ class FlutterInappPurchase {
   ///
   /// **NOTICE** second parameter is required on `Android`.
   ///
-  /// Check [AndroidProrationMode] for valid proration values
+  /// Check [AndroidReplacementMode] for valid proration values
   /// Identical to [requestPurchase] on `iOS`.
   /// [purchaseTokenAndroid] is used when upgrading subscriptions and sets the old purchase token
   /// [offerTokenIndex] is now required for billing 5.0, if upgraded from billing 4.0 this will default to 0
   Future requestSubscription(
     String productId, {
-    int? prorationModeAndroid,
+    int? replacementModeAndroid,
     String? obfuscatedAccountIdAndroid,
     String? obfuscatedProfileIdAndroid,
     String? purchaseTokenAndroid,
@@ -315,7 +315,7 @@ class FlutterInappPurchase {
       return await _channel.invokeMethod('buyItemByType', <String, dynamic>{
         'type': _TypeInApp.subs.name,
         'productId': productId,
-        'prorationMode': prorationModeAndroid ?? -1,
+        'replacementMode': replacementModeAndroid ?? -1,
         'obfuscatedAccountId': obfuscatedAccountIdAndroid,
         'obfuscatedProfileId': obfuscatedProfileIdAndroid,
         'purchaseToken': purchaseTokenAndroid,
@@ -692,29 +692,29 @@ class FlutterInappPurchase {
   }
 }
 
-/// A list of valid values for ProrationMode parameter
-/// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode
-class AndroidProrationMode {
+/// A list of valid values for AndroidReplacementMode parameter
+/// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.SubscriptionUpdateParams.ReplacementMode
+class AndroidReplacementMode {
   /// Replacement takes effect immediately, and the user is charged full price of new plan and is given a full billing cycle of subscription, plus remaining prorated time from the old plan.
-  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode#IMMEDIATE_AND_CHARGE_FULL_PRICE
-  static const int IMMEDIATE_AND_CHARGE_FULL_PRICE = 5;
+  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.SubscriptionUpdateParams.ReplacementMode#CHARGE_FULL_PRICE()
+  static const int CHARGE_FULL_PRICE = 5;
 
   /// Replacement takes effect when the old plan expires, and the new price will be charged at the same time.
-  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode#DEFERRED
-  static const int DEFERRED = 4;
+  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.SubscriptionUpdateParams.ReplacementMode#DEFERRED()
+  static const int DEFERRED = 6;
 
   /// Replacement takes effect immediately, and the billing cycle remains the same. The price for the remaining period will be charged. This option is only available for subscription upgrade.
-  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode#immediate_and_charge_prorated_price
-  static const int IMMEDIATE_AND_CHARGE_PRORATED_PRICE = 2;
+  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.SubscriptionUpdateParams.ReplacementMode#CHARGE_PRORATED_PRICE()
+  static const int CHARGE_PRORATED_PRICE = 2;
 
   /// Replacement takes effect immediately, and the new price will be charged on next recurrence time. The billing cycle stays the same.
-  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode#immediate_without_proration
-  static const int IMMEDIATE_WITHOUT_PRORATION = 3;
+  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.SubscriptionUpdateParams.ReplacementMode#WITHOUT_PRORATION()
+  static const int WITHOUT_PRORATION = 3;
 
   /// Replacement takes effect immediately, and the remaining time will be prorated and credited to the user. This is the current default behavior.
-  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode#immediate_with_time_proration
-  static const int IMMEDIATE_WITH_TIME_PRORATION = 1;
+  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.SubscriptionUpdateParams.ReplacementMode#WITH_TIME_PRORATION()
+  static const int WITH_TIME_PRORATION = 1;
 
-  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.ProrationMode#unknown_subscription_upgrade_downgrade_policy
-  static const int UNKNOWN_SUBSCRIPTION_UPGRADE_DOWNGRADE_POLICY = 0;
+  /// https://developer.android.com/reference/com/android/billingclient/api/BillingFlowParams.SubscriptionUpdateParams.ReplacementMode#UNKNOWN_REPLACEMENT_MODE()
+  static const int UNKNOWN_REPLACEMENT_MODE = 0;
 }
